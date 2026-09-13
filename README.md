@@ -81,6 +81,9 @@ Both the Next.js client and the Express API deploy to Vercel — no code changes
 besides environment variables. The API uses Vercel's zero-config Express support
 (`server/src/index.js` is auto-detected and runs as a single Fluid Function).
 
+The repo contains a `.nvmrc` (Node 22) — Vercel uses it for the build; do not change
+the project's Node.js Version (Settings → General → Node.js Version) to something older.
+
 ### 1. Push the code to GitHub
 
 ```bash
@@ -92,7 +95,8 @@ git push -u origin main
 ### 2. Deploy the client (project 1)
 
 1. Vercel → *Add New… → Project* → Import the `lunor-business-manager` repo.
-2. Framework preset: **Next.js**. Set **Root Directory** to `client`.
+2. Framework preset: **Next.js**. Set **Root Directory** to `client` — **critical**: if it stays
+   at the repo root the server's workspace script will build the wrong project.
 3. Under *Environment Variables* add:
    | Name | Value |
    | --- | --- |
@@ -104,8 +108,9 @@ git push -u origin main
 ### 3. Deploy the API (project 2)
 
 1. Vercel → *Add New… → Project* → Import the same repo.
-2. Framework: it auto-detects **Express** (zero-config). Set **Root Directory** to `server`.
-   Node version: keep the default (20+). Do NOT add a build command or output directory.
+2. Framework: it auto-detects **Express** (zero-config). **Set Root Directory to `server`** —
+   critical, otherwise Vercel runs the client's build instead. Do NOT add a build command
+   or output directory, and do NOT set `NODE_ENV` yourself (Vercel sets it to `production`).
 3. Under *Environment Variables* add:
    | Name | Value |
    | --- | --- |
@@ -113,7 +118,6 @@ git push -u origin main
    | `JWT_SECRET` | a long random string (`openssl rand -hex 48`) |
    | `JWT_EXPIRES_IN` | leave empty (non-expiring tokens, users stay logged in until logout) |
    | `CLIENT_URL` | the client URL from step 2 (comma-separate multiple origins if needed) |
-   | `NODE_ENV` | `production` |
    | `BUSINESS_TIMEZONE` | `Asia/Dhaka` |
 4. *Deploy*. Verify: open `https://<server-url>/api/health` → `{"success":true,...}`.
 
@@ -130,6 +134,12 @@ git push -u origin main
 
 - **Dashboard shows errors / CORS**: make sure `CLIENT_URL` on the API project is the exact
   client origin, and `NEXT_PUBLIC_API_URL` on the client is the exact `/api` URL (no trailing slash).
+- **Client build fails during `/_global-error` pre-render** ("Cannot read properties of null
+  (reading 'useContext')"): a known Next.js 16 framework issue on some environments. The app already
+  ships a minimal `client/src/app/global-error.js` (+ `.nvmrc` pinning Node 22) as a workaround.
+  If you still hit it: confirm the project Node.js Version is 22.x, and that no `NODE_ENV` value is
+  set manually in the project's environment variables (Vercel sets it automatically, and an explicit
+  value is the most common trigger on Next 16).
 - **401 on login**: redeploy after changing `JWT_SECRET` — old tokens become invalid.
 - **Timeouts**: keep default function region (`hkg1`) and duration; heavy exports may need
   Vercel's Fluid compute (default) to handle longer requests.

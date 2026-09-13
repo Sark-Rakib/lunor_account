@@ -10,7 +10,7 @@ export const metadata = {
     "Complete business management platform for LUNOR — sales, orders, inventory, accounting, reports and more.",
   applicationName: "LUNOR Business Manager",
   icons: {
-    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    icon: "/favicon.svg",
   },
 };
 
