@@ -3,7 +3,16 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { Bell, LogOut, Menu, Moon, Settings, Sun, User as UserIcon, CheckCheck } from "lucide-react";
+import {
+  Bell,
+  LogOut,
+  Menu,
+  Moon,
+  Settings,
+  Sun,
+  User as UserIcon,
+  CheckCheck,
+} from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { api, getStoredAuth } from "@/services/api";
 import { getInitialsColor, initials } from "@/lib/utils";
@@ -14,7 +23,8 @@ export default function Navbar({ onMenuClick }) {
   const queryClient = useQueryClient();
   const [userMenu, setUserMenu] = useState(false);
   const [dark, setDark] = useState(
-    typeof document !== "undefined" && document.documentElement.classList.contains("dark")
+    typeof document !== "undefined" &&
+      document.documentElement.classList.contains("dark"),
   );
 
   const toggleTheme = () => {
@@ -45,8 +55,12 @@ export default function Navbar({ onMenuClick }) {
       </button>
 
       <div className="hidden items-center gap-2 text-sm text-zinc-400 sm:flex">
-        <span className="font-medium text-zinc-600 dark:text-zinc-300">Welcome back,</span>
-        <span className="font-semibold text-zinc-900 dark:text-zinc-50">{user?.name?.split(" ")[0]}</span>
+        <span className="font-medium text-zinc-600 dark:text-zinc-300">
+          Welcome back,
+        </span>
+        <span className="font-semibold text-zinc-900 dark:text-zinc-50">
+          {user?.name?.split(" ")[0]}
+        </span>
       </div>
 
       <div className="ml-auto flex items-center gap-1">
@@ -64,18 +78,25 @@ export default function Navbar({ onMenuClick }) {
             onClick={() => setUserMenu((v) => !v)}
             className={cn(
               "flex size-9 items-center justify-center rounded-full text-xs font-bold text-white",
-              getInitialsColor(user?.name)
+              getInitialsColor(user?.name),
             )}
           >
             {initials(user?.name) || "U"}
           </button>
           {userMenu && (
             <>
-              <div className="fixed inset-0 z-40" onClick={() => setUserMenu(false)} />
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setUserMenu(false)}
+              />
               <div className="absolute right-0 z-50 mt-2 w-52 overflow-hidden rounded-xl border border-zinc-200 bg-white py-1 shadow-lg dark:border-zinc-800 dark:bg-zinc-900 animate-scale-in">
                 <div className="border-b border-zinc-100 px-4 py-3 dark:border-zinc-800">
-                  <p className="truncate text-sm font-semibold text-zinc-900 dark:text-zinc-100">{user?.name}</p>
-                  <p className="truncate text-xs text-zinc-500">{user?.email}</p>
+                  <p className="truncate text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                    {user?.name}
+                  </p>
+                  <p className="truncate text-xs text-zinc-500">
+                    {user?.email}
+                  </p>
                   <p className="mt-1 inline-block rounded bg-indigo-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-300">
                     {user?.role}
                   </p>
