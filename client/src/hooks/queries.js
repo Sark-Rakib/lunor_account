@@ -8,7 +8,11 @@ import {
 } from "@tanstack/react-query";
 import api from "@/services/api";
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+const rawAPIURL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+const baseURL = rawAPIURL.includes("/api")
+  ? rawAPIURL
+  : `${rawAPIURL.replace(/\/+$/, "")}/api`;
 
 export function createQueryClient() {
   return new QueryClient({

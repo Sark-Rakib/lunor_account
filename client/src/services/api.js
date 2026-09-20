@@ -4,7 +4,11 @@ import { toast } from "sonner";
 const TOKEN_KEY = "lunor_auth";
 export const AUTH_STORAGE_KEY = TOKEN_KEY;
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+const rawAPIURL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+const API_URL = rawAPIURL.includes("/api")
+  ? rawAPIURL
+  : `${rawAPIURL.replace(/\/+$/, "")}/api`;
 
 export function getStoredAuth() {
   if (typeof window === "undefined") return null;

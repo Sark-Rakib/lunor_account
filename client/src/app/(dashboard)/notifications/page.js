@@ -40,7 +40,10 @@ export default function NotificationsPage() {
 
   const items = data?.data || [];
   const pagination = data?.pagination || {};
-  const refresh = () => queryClient.invalidateQueries({ queryKey: ["notifications"] });
+  const refresh = () => {
+    queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    queryClient.invalidateQueries({ queryKey: ["notifications-unread"] });
+  };
 
   const readAllMutation = useMutation({
     method: "put",

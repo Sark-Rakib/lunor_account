@@ -28,6 +28,7 @@ export default function Navbar({ onMenuClick }) {
     try {
       await api.put("/notifications/read-all");
       queryClient.invalidateQueries({ queryKey: ["notifications-unread"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     } catch {
       /* ignore */
     }
