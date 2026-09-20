@@ -219,7 +219,7 @@ function OrderStatusCard({ data, loading }) {
 
 function RecentCard({ title, href, items = [], children, emptyIcon, emptyTitle, emptyHint, actionHref, actionLabel, loading }) {
   return (
-    <Card>
+    <Card className="min-w-0 overflow-hidden">
       <CardHeader className="pb-3">
         <CardTitle>{title}</CardTitle>
         <Link href={href} className="text-xs font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400">
