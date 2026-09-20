@@ -133,7 +133,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium text-zinc-800 dark:text-zinc-100">{s.invoiceNumber}</p>
-                  <p className="truncate text-xs text-zinc-400">{s.customer?.name || "Walk-in customer"} · {formatDateTime(s.saleDate)}</p>
+                  <p className="truncate text-xs text-zinc-400">{s.customerName || s.customer?.name || "Walk-in customer"} · {formatDateTime(s.saleDate)}</p>
                 </div>
               </div>
               <div className="text-right">
@@ -163,7 +163,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium text-zinc-800 dark:text-zinc-100">{o.orderNumber}</p>
-                  <p className="truncate text-xs text-zinc-400">{o.customer?.name || "Walk-in customer"} · {formatDateTime(o.orderDate)}</p>
+                  <p className="truncate text-xs text-zinc-400">{o.customerName || o.customer?.name || "Walk-in customer"} · {formatDateTime(o.orderDate)}</p>
                 </div>
               </div>
               <div className="text-right">

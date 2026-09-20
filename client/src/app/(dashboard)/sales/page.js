@@ -97,7 +97,7 @@ export default function SalesPage() {
         columns={[
           { key: "invoiceNumber", header: "Invoice", render: (s) => <Link href={`/sales/${s._id}`} className="font-medium text-indigo-600 hover:underline dark:text-indigo-400">{s.invoiceNumber}</Link> },
           { key: "saleDate", header: "Date", render: (s) => <span className="text-zinc-500">{formatDate(s.saleDate)}</span> },
-          { key: "customer", header: "Customer", render: (s) => <span className="text-zinc-700 dark:text-zinc-200">{s.customer?.name || "Walk-in"}</span> },
+          { key: "customer", header: "Customer", render: (s) => <span className="text-zinc-700 dark:text-zinc-200">{s.customerName || s.customer?.name || "Walk-in"}</span> },
           { key: "total", header: "Total", align: "right", render: (s) => <span className="font-semibold">{formatMoney(s.total)}</span> },
           { key: "dueAmount", header: "Due", align: "right", render: (s) => <span className={s.dueAmount > 0 ? "font-semibold text-rose-500" : "text-zinc-400"}>{formatMoney(s.dueAmount)}</span> },
           { key: "paymentStatus", header: "Payment", render: (s) => <StatusBadge status={s.paymentStatus} /> },

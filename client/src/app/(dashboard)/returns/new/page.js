@@ -47,7 +47,7 @@ export default function NewReturnPage() {
     setKeys(
       (data?.data || []).map((d) => ({
         value: d._id,
-        label: `${sourceType === "sale" ? d.invoiceNumber : d.orderNumber} · ${d.customer?.name || "Walk-in"} · ${formatMoney(d.total)}`,
+        label: `${sourceType === "sale" ? d.invoiceNumber : d.orderNumber} · ${d.customerName || d.customer?.name || "Walk-in"} · ${formatMoney(d.total)}`,
       }))
     );
   };

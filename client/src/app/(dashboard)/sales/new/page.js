@@ -24,6 +24,7 @@ export default function NewSalePage() {
 
   const [form, setForm] = useState({
     customer: "",
+    customerName: "",
     items: [],
     discount: 0,
     deliveryCharge: 0,
@@ -66,8 +67,9 @@ export default function NewSalePage() {
         })),
         discount,
         deliveryCharge,
-        paymentMethod: form.paymentMethod,
+        paymentMethod: form.        paymentMethod,
         paidAmount: Number(form.paidAmount) || 0,
+        customerName: form.customerName,
         saleDate: form.saleDate,
         notes: form.notes,
       };
@@ -99,10 +101,17 @@ export default function NewSalePage() {
             <CardContent className="space-y-4 pt-5">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Field label="Customer">
-                  <Select value={form.customer} onChange={(e) => setForm({ ...form, customer: e.target.value })}>
-                    <option value="">Walk-in customer</option>
-                    {customers.map((c) => <option key={c._id} value={c._id}>{c.name} ({c.phone || "no phone"})</option>)}
-                  </Select>
+                  <div className="space-y-2">
+                    <Select value={form.customer} onChange={(e) => setForm({ ...form, customer: e.target.value, customerName: "" })}>
+                      <option value="">Walk-in customer</option>
+                      {customers.map((c) => <option key={c._id} value={c._id}>{c.name} ({c.phone || "no phone"})</option>)}
+                    </Select>
+                    <Input
+                      placeholder="…or type a customer name"
+                      value={form.customerName}
+                      onChange={(e) => setForm({ ...form, customerName: e.target.value, customer: "" })}
+                    />
+                  </div>
                 </Field>
                 <Field label="Sale date">
                   <DateInput value={form.saleDate} onChange={(e) => setForm({ ...form, saleDate: e.target.value })} />

@@ -11,7 +11,7 @@ const { generateNumber } = require("./numberService");
 const { runInTransaction } = require("../config/db");
 
 async function createSale({ body, user }) {
-  const { customer, items = [], discount = 0, deliveryCharge = 0, paymentMethod = "Cash", paidAmount, saleDate, notes = "" } = body;
+  const { customer, customerName = "", items = [], discount = 0, deliveryCharge = 0, paymentMethod = "Cash", paidAmount, saleDate, notes = "" } = body;
 
   if (!items || items.length === 0) throw new AppError("Sale must contain at least one product", 400);
 
@@ -109,7 +109,8 @@ async function createSale({ body, user }) {
         method: paymentMethod,
         referenceType: "Sale",
         reference: doc._id,
-        customer: customerDoc?._id || null,
+      customer: customerDoc?._id || null,
+      customerName: (customerName || customerDoc?.name || "").trim(),
         description: `Payment for sale ${invoiceNumber}`,
         paymentDate: saleDate ? new Date(saleDate) : new Date(),
         user,

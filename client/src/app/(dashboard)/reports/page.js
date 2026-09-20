@@ -134,7 +134,7 @@ function SalesReport({ report, isLoading }) {
         title={`Invoices (${sales.length})`}
         columns={[
           { key: "invoiceNumber", header: "Invoice", render: (s) => <span className="font-medium text-indigo-600">{s.invoiceNumber}</span> },
-          { key: "customer", header: "Customer", render: (s) => s.customer?.name || "Walk-in" },
+          { key: "customer", header: "Customer", render: (s) => s.customerName || s.customer?.name || "Walk-in" },
           { key: "total", header: "Total", align: "right", render: (s) => formatMoney(s.total) },
           { key: "profit", header: "Profit", align: "right", render: (s) => <span className="text-emerald-600">{formatMoney(s.profit)}</span> },
           { key: "paymentStatus", header: "Payment", render: (s) => <StatusBadge status={s.paymentStatus} /> },
@@ -146,7 +146,7 @@ function SalesReport({ report, isLoading }) {
         title={`Orders (${orders.length})`}
         columns={[
           { key: "orderNumber", header: "Order", render: (o) => <span className="font-medium text-indigo-600">{o.orderNumber}</span> },
-          { key: "customer", header: "Customer", render: (o) => o.customer?.name || "Walk-in" },
+          { key: "customer", header: "Customer", render: (o) => o.customerName || o.customer?.name || "Walk-in" },
           { key: "total", header: "Total", align: "right", render: (o) => formatMoney(o.total) },
           { key: "orderStatus", header: "Status", render: (o) => <StatusBadge status={o.orderStatus} /> },
           { key: "paymentStatus", header: "Payment", render: (o) => <StatusBadge status={o.paymentStatus} /> },

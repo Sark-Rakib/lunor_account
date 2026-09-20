@@ -100,7 +100,7 @@ export default function OrdersPage() {
         columns={[
           { key: "orderNumber", header: "Order", render: (o) => <Link href={`/orders/${o._id}`} className="font-medium text-indigo-600 hover:underline dark:text-indigo-400">{o.orderNumber}</Link> },
           { key: "orderDate", header: "Date", render: (o) => <span className="text-zinc-500">{formatDate(o.orderDate)}</span> },
-          { key: "customer", header: "Customer", render: (o) => <span className="text-zinc-700 dark:text-zinc-200">{o.customer?.name || "Walk-in"}</span> },
+          { key: "customer", header: "Customer", render: (o) => <span className="text-zinc-700 dark:text-zinc-200">{o.customerName || o.customer?.name || "Walk-in"}</span> },
           { key: "total", header: "Total", align: "right", render: (o) => <span className="font-semibold">{formatMoney(o.total)}</span> },
           { key: "dueAmount", header: "Due", align: "right", render: (o) => <span className={o.dueAmount > 0 ? "font-semibold text-rose-500" : "text-zinc-400"}>{formatMoney(o.dueAmount)}</span> },
           { key: "orderStatus", header: "Order status", render: (o) => <StatusBadge status={o.orderStatus} /> },
