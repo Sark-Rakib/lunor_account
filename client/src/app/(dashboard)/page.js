@@ -13,7 +13,7 @@ import {
   ShoppingCart,
 } from "lucide-react";
 import { useQuery } from "@/hooks/queries";
-import { api } from "@/services/api";
+import { api, getStoredAuth } from "@/services/api";
 import PageHeader from "@/components/ui/PageHeader";
 import StatCard from "@/components/ui/StatCard";
 import Button from "@/components/ui/Button";
@@ -34,6 +34,7 @@ export default function DashboardPage() {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["dashboard", range],
     queryFn: () => api.get("/dashboard", { params: buildParams(range) }),
+    enabled: typeof window !== "undefined" && !!getStoredAuth(),
   });
 
   const dash = data?.dashboard;
