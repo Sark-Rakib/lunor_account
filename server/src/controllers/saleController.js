@@ -120,7 +120,7 @@ const editSale = asyncHandler(async (req, res) => {
   const { computeSaleTotals } = require("../services/finance");
   const { runInTransaction } = require("../config/db");
 
-  const { customer, items = [], discount = 0, deliveryCharge = 0, paymentMethod, paidAmount, saleDate, notes } = req.body;
+  const { customer, customerName, items = [], discount = 0, deliveryCharge = 0, paymentMethod, paidAmount, saleDate, notes } = req.body;
   if (!items || items.length === 0) throw new AppError("Sale must contain at least one product", 400);
 
   const productIds = items.map((i) => i.product);
@@ -213,6 +213,7 @@ const editSale = asyncHandler(async (req, res) => {
 
     Object.assign(sale, {
       customer: customer || sale.customer,
+      customerName: (customerName || sale.customerName || "").trim(),
       items: totals.items,
       subtotal: totals.subtotal,
       discount: totals.discount,

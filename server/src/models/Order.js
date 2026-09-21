@@ -28,6 +28,7 @@ const orderSchema = new mongoose.Schema(
   {
     orderNumber: { type: String, required: true, unique: true, trim: true },
     customer: { type: mongoose.Schema.Types.ObjectId, ref: "Customer", default: null },
+    customerName: { type: String, default: "", trim: true },
     items: { type: [orderItemSchema], default: [] },
     subtotal: { type: Number, default: 0 },
     discount: { type: Number, default: 0, min: 0 },

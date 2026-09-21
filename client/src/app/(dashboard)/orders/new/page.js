@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
+
 import { api } from "@/services/api";
 import { useCustomers, useProducts } from "@/hooks/useOptions";
 import PageHeader from "@/components/ui/PageHeader";
@@ -23,8 +24,15 @@ import { formatMoney, todayStr } from "@/lib/utils";
 
 export default function NewOrderPage() {
   const router = useRouter();
-  const { data: productsData } = useProducts({ params: { limit: 250 } });
-  const { data: customersData } = useCustomers({ params: { limit: 250 } });
+
+  const { data: productsData } = useProducts({
+    params: { limit: 250 },
+  });
+
+  const { data: customersData } = useCustomers({
+    params: { limit: 250 },
+  });
+
   const products = productsData?.data || [];
   const customers = customersData?.data || [];
 
@@ -39,31 +47,44 @@ export default function NewOrderPage() {
     orderDate: todayStr(),
     notes: "",
   });
+
   const [saving, setSaving] = useState(false);
 
   const subtotal = form.items.reduce(
-    (s, it) => s + (Number(it.quantity) || 0) * (Number(it.price) || 0),
+    (sum, item) =>
+      sum + (Number(item.quantity) || 0) * (Number(item.price) || 0),
     0,
   );
+
   const discount = Number(form.discount) || 0;
   const deliveryCharge = Number(form.deliveryCharge) || 0;
+
   const total = Math.max(0, subtotal - discount + deliveryCharge);
+
   const paid = Math.min(Number(form.paidAmount) || 0, total);
 
   const submit = async () => {
-    if (form.items.length === 0) return toast.error("Add at least one product");
-    if (form.items.some((it) => !it.product))
+    if (form.items.length === 0) {
+      return toast.error("Add at least one product");
+    }
+
+    if (form.items.some((item) => !item.product)) {
       return toast.error("Every item needs a product selected");
+    }
+
     setSaving(true);
+
     try {
       const payload = {
         customer: form.customer || null,
-        items: form.items.map((it) => ({
-          product: it.product,
-          size: it.size || "",
-          quantity: Number(it.quantity),
-          sellingPrice: Number(it.price),
+
+        items: form.items.map((item) => ({
+          product: item.product,
+          size: item.size || "",
+          quantity: Number(item.quantity),
+          sellingPrice: Number(item.price),
         })),
+
         discount,
         deliveryCharge,
         paymentMethod: form.paymentMethod,
@@ -72,8 +93,11 @@ export default function NewOrderPage() {
         orderDate: form.orderDate,
         notes: form.notes,
       };
+
       const res = await api.post("/orders", payload);
+
       toast.success("Order created");
+
       router.push(`/orders/${res.order?._id}`);
     } catch (e) {
       toast.error(e.message);
@@ -84,154 +108,227 @@ export default function NewOrderPage() {
 
   return (
     <div className="space-y-4">
+      {/* Header */}
       <PageHeader
         title="New Order"
         description="Create a customer order. Stock is reserved when confirmed."
         actions={
           <Link
             href="/orders"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-100"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-800 dark:hover:text-zinc-100"
           >
-            <ChevronLeft className="size-4" /> Back to orders
+            <ChevronLeft className="size-4" />
+            <span>Back to orders</span>
           </Link>
         }
       />
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="space-y-4 col-span-1 lg:col-span-2">
+      {/* Main Layout */}
+      <div className="grid min-w-0 gap-4 lg:grid-cols-3">
+        {/* Main Content */}
+        <div className="min-w-0 space-y-4 lg:col-span-2">
           <Card>
             <CardContent className="space-y-4 pt-5">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              {/* Customer / Date / Status */}
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {/* Customer */}
                 <Field label="Customer">
                   <Select
                     value={form.customer}
                     onChange={(e) =>
-                      setForm({ ...form, customer: e.target.value })
+                      setForm({
+                        ...form,
+                        customer: e.target.value,
+                      })
                     }
                   >
                     <option value="">Walk-in / guest</option>
-                    {customers.map((c) => (
-                      <option key={c._id} value={c._id}>
-                        {c.name} ({c.phone || "no phone"})
+
+                    {customers.map((customer) => (
+                      <option key={customer._id} value={customer._id}>
+                        {customer.name} ({customer.phone || "no phone"})
                       </option>
                     ))}
                   </Select>
                 </Field>
+
+                {/* Order Date */}
                 <Field label="Order date">
                   <DateInput
                     value={form.orderDate}
                     onChange={(e) =>
-                      setForm({ ...form, orderDate: e.target.value })
+                      setForm({
+                        ...form,
+                        orderDate: e.target.value,
+                      })
                     }
                   />
                 </Field>
+
+                {/* Initial Status */}
                 <Field label="Initial status">
                   <Select
                     value={form.orderStatus}
                     onChange={(e) =>
-                      setForm({ ...form, orderStatus: e.target.value })
+                      setForm({
+                        ...form,
+                        orderStatus: e.target.value,
+                      })
                     }
                   >
                     {ORDER_STATUSES.filter(
-                      (s) => !["Returned", "Refunded"].includes(s),
-                    ).map((s) => (
-                      <option key={s} value={s}>
-                        {s}
+                      (status) => !["Returned", "Refunded"].includes(status),
+                    ).map((status) => (
+                      <option key={status} value={status}>
+                        {status}
                       </option>
                     ))}
                   </Select>
                 </Field>
               </div>
-              <ItemsEditor
-                products={products}
-                items={form.items}
-                onChange={(items) => setForm({ ...form, items })}
-              />
+
+              {/* Items */}
+              <div className="min-w-0 overflow-hidden">
+                <ItemsEditor
+                  products={products}
+                  items={form.items}
+                  onChange={(items) =>
+                    setForm({
+                      ...form,
+                      items,
+                    })
+                  }
+                />
+              </div>
             </CardContent>
           </Card>
         </div>
 
-        <div className="space-y-4">
+        {/* Payment / Summary */}
+        <div className="min-w-0 space-y-4">
           <Card>
             <CardContent className="space-y-4 pt-5">
+              {/* Discount */}
               <Field label="Discount (৳)">
                 <Input
                   type="number"
                   min="0"
                   value={form.discount}
                   onChange={(e) =>
-                    setForm({ ...form, discount: e.target.value })
+                    setForm({
+                      ...form,
+                      discount: e.target.value,
+                    })
                   }
                 />
               </Field>
+
+              {/* Delivery Charge */}
               <Field label="Delivery charge (৳)">
                 <Input
                   type="number"
                   min="0"
                   value={form.deliveryCharge}
                   onChange={(e) =>
-                    setForm({ ...form, deliveryCharge: e.target.value })
+                    setForm({
+                      ...form,
+                      deliveryCharge: e.target.value,
+                    })
                   }
                 />
               </Field>
+
+              {/* Payment Method */}
               <Field label="Payment method">
                 <Select
                   value={form.paymentMethod}
                   onChange={(e) =>
-                    setForm({ ...form, paymentMethod: e.target.value })
+                    setForm({
+                      ...form,
+                      paymentMethod: e.target.value,
+                    })
                   }
                 >
-                  {PAYMENT_METHODS.map((m) => (
-                    <option key={m} value={m}>
-                      {m}
+                  {PAYMENT_METHODS.map((method) => (
+                    <option key={method} value={method}>
+                      {method}
                     </option>
                   ))}
                 </Select>
               </Field>
+
+              {/* Advance Paid */}
               <Field label="Advance paid (৳)">
                 <Input
                   type="number"
                   min="0"
                   value={form.paidAmount}
                   onChange={(e) =>
-                    setForm({ ...form, paidAmount: e.target.value })
+                    setForm({
+                      ...form,
+                      paidAmount: e.target.value,
+                    })
                   }
                 />
               </Field>
 
-              <div className="rounded-lg bg-zinc-50 p-4 text-sm dark:bg-zinc-800/60">
-                <div className="flex justify-between text-zinc-500">
+              {/* Order Summary */}
+              <div className="rounded-lg bg-zinc-50 p-3 text-sm dark:bg-zinc-800/60 sm:p-4">
+                {/* Subtotal */}
+                <div className="flex items-center justify-between gap-4 text-zinc-500">
                   <span>Subtotal</span>
-                  <span>{formatMoney(subtotal)}</span>
+
+                  <span className="shrink-0">{formatMoney(subtotal)}</span>
                 </div>
-                <div className="mt-1 flex justify-between text-zinc-500">
+
+                {/* Discount */}
+                <div className="mt-1 flex items-center justify-between gap-4 text-zinc-500">
                   <span>Discount</span>
-                  <span>-{formatMoney(discount)}</span>
+
+                  <span className="shrink-0">-{formatMoney(discount)}</span>
                 </div>
-                <div className="mt-1 flex justify-between text-zinc-500">
+
+                {/* Delivery */}
+                <div className="mt-1 flex items-center justify-between gap-4 text-zinc-500">
                   <span>Delivery</span>
-                  <span>+{formatMoney(deliveryCharge)}</span>
+
+                  <span className="shrink-0">
+                    +{formatMoney(deliveryCharge)}
+                  </span>
                 </div>
-                <div className="mt-2 flex justify-between border-t border-zinc-200 pt-2 font-bold text-zinc-900 dark:border-zinc-700 dark:text-zinc-50">
+
+                {/* Total */}
+                <div className="mt-2 flex items-center justify-between gap-4 border-t border-zinc-200 pt-2 font-bold text-zinc-900 dark:border-zinc-700 dark:text-zinc-50">
                   <span>Total</span>
-                  <span>{formatMoney(total)}</span>
+
+                  <span className="shrink-0">{formatMoney(total)}</span>
                 </div>
-                <div className="mt-2 flex justify-between text-xs text-zinc-500">
+
+                {/* Due */}
+                <div className="mt-2 flex items-center justify-between gap-4 text-xs text-zinc-500">
                   <span>Due on delivery</span>
-                  <span className="font-semibold text-amber-600">
+
+                  <span className="shrink-0 font-semibold text-amber-600">
                     {formatMoney(total - paid)}
                   </span>
                 </div>
               </div>
 
+              {/* Notes */}
               <Field label="Notes">
                 <Textarea
                   value={form.notes}
-                  onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      notes: e.target.value,
+                    })
+                  }
                   rows={2}
                 />
               </Field>
 
+              {/* Submit */}
               <Button className="w-full" onClick={submit} loading={saving}>
                 {saving ? "Creating…" : "Create order"}
               </Button>

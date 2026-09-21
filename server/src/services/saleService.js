@@ -56,6 +56,7 @@ async function createSale({ body, user }) {
     const doc = new Sale({
       invoiceNumber,
       customer: customerDoc?._id || null,
+      customerName: (customerName || customerDoc?.name || "").trim(),
       items: totals.items,
       subtotal: totals.subtotal,
       discount: totals.discount,

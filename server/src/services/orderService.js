@@ -22,6 +22,7 @@ async function createOrder({ body, user }) {
     deliveryCharge = 0,
     paymentMethod = "Cash",
     paidAmount = 0,
+    customerName = "",
     orderStatus,
     orderDate,
     notes = "",
@@ -75,6 +76,7 @@ async function createOrder({ body, user }) {
     const doc = new Order({
       orderNumber,
       customer: customerDoc?._id || null,
+      customerName: (customerName || customerDoc?.name || "").trim(),
       items: totals.items,
       subtotal: totals.subtotal,
       discount: totals.discount,
