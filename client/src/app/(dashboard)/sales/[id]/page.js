@@ -22,6 +22,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 export default function SaleDetailPage() {
   const { id } = useParams();
   const queryClient = useQueryClient();
+
   const [payModal, setPayModal] = useState(false);
   const [cancelTarget, setCancelTarget] = useState(false);
 
@@ -44,110 +45,138 @@ export default function SaleDetailPage() {
 
   if (isLoading || !sale) {
     return (
-      <div className="space-y-4">
-        <Skeleton className="h-8 w-56" />
-        <div className="grid gap-4 lg:grid-cols-3">
-          <div className="lg:col-span-2">
+      <div className="min-w-0 space-y-4">
+        <Skeleton className="h-8 w-56 max-w-full" />
+
+        <div className="grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-3">
+          <div className="min-w-0 lg:col-span-2">
             <Card>
-              <CardContent className="space-y-3 p-5">
+              <CardContent className="min-w-0 space-y-3 p-5">
                 {[...Array(6)].map((_, i) => (
                   <Skeleton key={i} className="h-10 w-full" />
                 ))}
               </CardContent>
             </Card>
           </div>
-          <Card>
-            <CardContent className="space-y-3 p-5">
-              {[...Array(4)].map((_, i) => (
-                <Skeleton key={i} className="h-10 w-full" />
-              ))}
-            </CardContent>
-          </Card>
+
+          <div className="min-w-0">
+            <Card>
+              <CardContent className="min-w-0 space-y-3 p-5">
+                {[...Array(4)].map((_, i) => (
+                  <Skeleton key={i} className="h-10 w-full" />
+                ))}
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4 print:space-y-0">
+    <div className="min-w-0 space-y-4 print:space-y-0">
       <PageHeader
         title={`Sale ${sale.invoiceNumber}`}
         description={`Recorded ${formatDateTime(sale.saleDate)}`}
         actions={
-          <>
+          <div className="flex max-w-full flex-wrap items-center gap-2">
             <button
               onClick={() => window.print()}
               className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
             >
-              <Printer className="size-4" /> Print
+              <Printer className="size-4 shrink-0" />
+              <span>Print</span>
             </button>
+
             {sale.status !== "cancelled" && sale.dueAmount > 0 && (
               <Button variant="secondary" onClick={() => setPayModal(true)}>
-                <Banknote className="size-4" /> Record payment
+                <Banknote className="size-4 shrink-0" />
+                <span>Record payment</span>
               </Button>
             )}
+
             {sale.status !== "cancelled" && (
               <Button variant="danger" onClick={() => setCancelTarget(true)}>
-                <Ban className="size-4" /> Cancel sale
+                <Ban className="size-4 shrink-0" />
+                <span>Cancel sale</span>
               </Button>
             )}
-          </>
+          </div>
         }
       />
 
       <Link
         href="/sales"
-        className="mb-2 inline-flex items-center gap-1 text-sm font-medium text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-100"
+        className="mb-2 inline-flex max-w-full items-center gap-1 text-sm font-medium text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-100"
       >
-        <ArrowLeft className="size-4" /> Back to sales
+        <ArrowLeft className="size-4 shrink-0" />
+        <span>Back to sales</span>
       </Link>
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="space-y-4 lg:col-span-2">
-          <Card>
+      <div className="grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-3">
+        {/* Main Section */}
+        <div className="min-w-0 space-y-4 lg:col-span-2">
+          <Card className="min-w-0">
             <CardHeader className="pb-3">
               <CardTitle>Items</CardTitle>
             </CardHeader>
-            <CardContent className="p-0 pt-0">
-              <div className="overflow-x-auto">
+
+            <CardContent className="min-w-0 p-0 pt-0">
+              <div className="w-full max-w-full overflow-x-auto">
                 <table className="w-full min-w-[480px] text-left text-sm">
                   <thead>
                     <tr className="border-b border-zinc-200 text-xs uppercase text-zinc-500 dark:border-zinc-800">
-                      <th className="px-4 py-2.5 font-semibold">Product</th>
-                      <th className="px-4 py-2.5 font-semibold">Size</th>
-                      <th className="px-4 py-2.5 text-right font-semibold">
+                      <th className="whitespace-nowrap px-4 py-2.5 font-semibold">
+                        Product
+                      </th>
+
+                      <th className="whitespace-nowrap px-4 py-2.5 font-semibold">
+                        Size
+                      </th>
+
+                      <th className="whitespace-nowrap px-4 py-2.5 text-right font-semibold">
                         Qty
                       </th>
-                      <th className="px-4 py-2.5 text-right font-semibold">
+
+                      <th className="whitespace-nowrap px-4 py-2.5 text-right font-semibold">
                         Price
                       </th>
-                      <th className="px-4 py-2.5 text-right font-semibold">
+
+                      <th className="whitespace-nowrap px-4 py-2.5 text-right font-semibold">
                         Line total
                       </th>
                     </tr>
                   </thead>
+
                   <tbody>
                     {sale.items.map((it, i) => (
                       <tr
                         key={i}
                         className="border-b border-zinc-100 last:border-0 dark:border-zinc-800/60"
                       >
-                        <td className="px-4 py-3">
-                          <p className="font-medium text-zinc-800 dark:text-zinc-100">
+                        <td className="max-w-[220px] px-4 py-3">
+                          <p className="truncate font-medium text-zinc-800 dark:text-zinc-100">
                             {it.name}
                           </p>
-                          <p className="text-xs text-zinc-400">{it.sku}</p>
+
+                          <p className="truncate text-xs text-zinc-400">
+                            {it.sku}
+                          </p>
                         </td>
-                        <td className="px-4 py-3 text-zinc-500">
+
+                        <td className="whitespace-nowrap px-4 py-3 text-zinc-500">
                           {it.size || "—"}
                         </td>
-                        <td className="px-4 py-3 text-right text-zinc-700 dark:text-zinc-200">
+
+                        <td className="whitespace-nowrap px-4 py-3 text-right text-zinc-700 dark:text-zinc-200">
                           {it.quantity}
                         </td>
-                        <td className="px-4 py-3 text-right text-zinc-600 dark:text-zinc-300">
+
+                        <td className="whitespace-nowrap px-4 py-3 text-right text-zinc-600 dark:text-zinc-300">
                           {formatMoney(it.sellingPrice)}
                         </td>
-                        <td className="px-4 py-3 text-right font-semibold">
+
+                        <td className="whitespace-nowrap px-4 py-3 text-right font-semibold">
                           {formatMoney(it.lineTotal)}
                         </td>
                       </tr>
@@ -167,45 +196,60 @@ export default function SaleDetailPage() {
           )}
         </div>
 
-        <div className="space-y-4">
-          <Card>
+        {/* Right Section */}
+        <div className="min-w-0 space-y-4">
+          <Card className="min-w-0">
             <CardHeader className="pb-3">
               <CardTitle>Summary</CardTitle>
             </CardHeader>
-            <CardContent className="pt-2">
+
+            <CardContent className="min-w-0 pt-2">
               <SummaryRow label="Subtotal" value={formatMoney(sale.subtotal)} />
+
               <SummaryRow
                 label="Discount"
                 value={`-${formatMoney(sale.discount)}`}
                 muted={!sale.discount}
               />
+
               <SummaryRow
                 label="Delivery"
                 value={`+${formatMoney(sale.deliveryCharge)}`}
                 muted={!sale.deliveryCharge}
               />
+
               <SummaryRow
                 label="Total"
                 value={formatMoney(sale.total)}
                 strong
               />
+
               <div className="my-3 h-px bg-zinc-100 dark:bg-zinc-800" />
+
               <SummaryRow label="Paid" value={formatMoney(sale.paidAmount)} />
+
               <SummaryRow
                 label="Due"
                 value={formatMoney(sale.dueAmount)}
                 tone={sale.dueAmount > 0 ? "rose" : "emerald"}
               />
-              <div className="mb-3 mt-4 flex items-center justify-between text-sm">
-                <span className="text-zinc-500">Payment</span>
-                <StatusBadge status={sale.paymentStatus} />
+
+              <div className="mb-3 mt-4 flex min-w-0 items-center justify-between gap-3 text-sm">
+                <span className="shrink-0 text-zinc-500">Payment</span>
+
+                <div className="min-w-0">
+                  <StatusBadge status={sale.paymentStatus} />
+                </div>
               </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-zinc-500">Method</span>
-                <span className="font-medium text-zinc-700 dark:text-zinc-200">
+
+              <div className="flex min-w-0 items-center justify-between gap-3 text-sm">
+                <span className="shrink-0 text-zinc-500">Method</span>
+
+                <span className="min-w-0 text-right font-medium text-zinc-700 dark:text-zinc-200">
                   {sale.paymentMethod}
                 </span>
               </div>
+
               {sale.returnedQuantity > 0 && (
                 <div className="mt-4 rounded-lg bg-violet-50 p-3 text-xs text-violet-700 dark:bg-violet-500/10 dark:text-violet-300">
                   {sale.returnedQuantity} item
@@ -216,36 +260,40 @@ export default function SaleDetailPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="min-w-0">
             <CardHeader className="pb-3">
               <CardTitle>Customer</CardTitle>
             </CardHeader>
-            <CardContent className="pt-2 text-sm">
+
+            <CardContent className="min-w-0 pt-2 text-sm">
               {sale.customer ? (
-                <div className="space-y-1">
-                  <p className="font-medium text-zinc-800 dark:text-zinc-100">
+                <div className="min-w-0 space-y-1">
+                  <p className=" font-medium text-zinc-800 dark:text-zinc-100">
                     {sale.customer?.name ||
                       sale.customerName ||
                       "Walk-in customer"}
                   </p>
 
-                  <p className="text-zinc-500">
+                  <p className=" text-zinc-500">
                     {sale.customer?.phone || "No phone"}
                   </p>
 
                   {sale.customer?.email && (
-                    <p className="text-zinc-500">{sale.customer.email}</p>
+                    <p className="break-all text-zinc-500">
+                      {sale.customer.email}
+                    </p>
                   )}
 
                   {sale.customer?.address && (
-                    <p className="text-zinc-500">{sale.customer.address}</p>
+                    <p className=" text-zinc-500">{sale.customer.address}</p>
                   )}
                 </div>
               ) : (
-                <p className="text-zinc-400">
+                <p className=" text-zinc-400">
                   {sale.customerName || "Walk-in customer"}
                 </p>
               )}
+
               {sale.notes && (
                 <div className="mt-3 rounded-lg bg-zinc-50 p-3 text-xs text-zinc-500 dark:bg-zinc-800/60">
                   {sale.notes}
@@ -262,9 +310,15 @@ export default function SaleDetailPage() {
           onClose={() => setPayModal(false)}
           onDone={() => {
             setPayModal(false);
-            queryClient.invalidateQueries({ queryKey: ["sale", id] });
-            queryClient.invalidateQueries({ queryKey: ["sales"] });
-            queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+            queryClient.invalidateQueries({
+              queryKey: ["sale", id],
+            });
+            queryClient.invalidateQueries({
+              queryKey: ["sales"],
+            });
+            queryClient.invalidateQueries({
+              queryKey: ["dashboard"],
+            });
           }}
         />
       )}
@@ -288,11 +342,13 @@ export default function SaleDetailPage() {
 
     const submit = async () => {
       setSaving(true);
+
       try {
         await api.post(`/sales/${s._id}/payments`, {
           amount: Number(amount) || 0,
           method,
         });
+
         toast.success("Payment recorded");
         onDone();
       } catch (e) {
@@ -307,19 +363,22 @@ export default function SaleDetailPage() {
         open
         onClose={onClose}
         title="Record payment"
-        description={`Collecting from ${s.customer?.name || "walk-in"} for ${s.invoiceNumber}. Due: ${formatMoney(s.dueAmount)}`}
+        description={`Collecting from ${
+          s.customer?.name || "walk-in"
+        } for ${s.invoiceNumber}. Due: ${formatMoney(s.dueAmount)}`}
         footer={
-          <>
+          <div className="flex w-full flex-wrap justify-end gap-2">
             <Button variant="secondary" onClick={onClose}>
               Cancel
             </Button>
+
             <Button onClick={submit} loading={saving}>
               Record payment
             </Button>
-          </>
+          </div>
         }
       >
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="Amount (৳)" required>
             <Input
               type="number"
@@ -327,10 +386,16 @@ export default function SaleDetailPage() {
               max={s.dueAmount}
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
+              className="w-full min-w-0"
             />
           </Field>
+
           <Field label="Method">
-            <Select value={method} onChange={(e) => setMethod(e.target.value)}>
+            <Select
+              value={method}
+              onChange={(e) => setMethod(e.target.value)}
+              className="w-full min-w-0"
+            >
               {PAYMENT_METHODS.map((m) => (
                 <option key={m} value={m}>
                   {m}
@@ -349,14 +414,22 @@ function SummaryRow({ label, value, strong, muted, tone }) {
     rose: "text-rose-500",
     emerald: "text-emerald-600",
   };
+
   return (
-    <div className="flex items-center justify-between py-1.5 text-sm">
-      <span className="text-zinc-500">{label}</span>
+    <div className="flex min-w-0 items-center justify-between gap-4 py-1.5 text-sm">
+      <span className="shrink-0 text-zinc-500">{label}</span>
+
       <span
         className={
           strong
-            ? "text-base font-bold text-zinc-900 dark:text-zinc-50"
-            : `font-medium ${tone ? tones[tone] : muted ? "text-zinc-400" : "text-zinc-700 dark:text-zinc-200"}`
+            ? "min-w-0  text-right text-base font-bold text-zinc-900 dark:text-zinc-50"
+            : `min-w-0  text-right font-medium ${
+                tone
+                  ? tones[tone]
+                  : muted
+                    ? "text-zinc-400"
+                    : "text-zinc-700 dark:text-zinc-200"
+              }`
         }
       >
         {value}
